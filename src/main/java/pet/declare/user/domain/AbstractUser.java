@@ -1,16 +1,19 @@
 package pet.declare.user.domain;
 
-import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import pet.declare.user.utils.TimeUtils;
 
-import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,33 +23,26 @@ import java.util.UUID;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-public class AbstractUser implements UserDetails {
+@Document(collection = "user_collection")
+public abstract class AbstractUser implements UserDetails {
 
-    private static final String ROLE_PREFIX = "ROLE_";
+    @Transient
+    public static final String ROLE_PREFIX = "ROLE_";
 
-    private  UUID id;
+    @Id
+    protected String id;
     private String email;
     private String password;
-    private OffsetDateTime lastPasswordChangedTime;
-    private OffsetDateTime lastActiveTime;
+    private LocalDateTime lastPasswordChangedTime;
+    private LocalDateTime lastActiveTime;
     private boolean emailVerified;
-
-    @Value("password.validity.duration")
-    protected String durationString;
-    protected Duration passwordValidityDuration = Duration.parse(durationString);
-
-    @Value("account.expire.threshold")
-    protected String accountExpireString;
-    protected Duration accountExpiresThreshold;
-
     private String role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<GrantedAuthority> role = new ArrayList<>();
-        role.add(new SimpleGrantedAuthority(ROLE_PREFIX + role));
-
-        return role;
+        List<GrantedAuthority> roles = new ArrayList<>();
+        roles.add(new SimpleGrantedAuthority(ROLE_PREFIX + role));
+        return roles;
     }
 
     @Override
@@ -61,7 +57,7 @@ public class AbstractUser implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return lastActiveTime.plus(accountExpiresThreshold).isAfter(OffsetDateTime.now());
+        return lastActiveTime.plus(TimeUtils.ACCOUNT_EXPIRES_DURATION).isAfter(LocalDateTime.now());
     }
 
     @Override
@@ -71,9 +67,8 @@ public class AbstractUser implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return lastPasswordChangedTime.plus(passwordValidityDuration).isAfter(OffsetDateTime.now());
+        return lastPasswordChangedTime.plus(TimeUtils.PASSWORD_EXPIRES_DURATION).isAfter(LocalDateTime.now());
     }
-
     @Override
     public boolean isEnabled() {
         return emailVerified;

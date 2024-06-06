@@ -1,1 +1,1 @@
-# Project adopt.pet - user microservice
+# Project declare.pet - user microservice

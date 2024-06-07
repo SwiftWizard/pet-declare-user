@@ -10,7 +10,6 @@ import pet.declare.user.repository.UserRepository;
 @AllArgsConstructor
 public class UserService {
     private UserRepository userRepo;
-
     public User save(User user){
         if(userExists(user)){
             throw new UserExistsException(String.format("User with %s already registered", user.getEmail()));

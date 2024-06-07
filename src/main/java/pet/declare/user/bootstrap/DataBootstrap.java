@@ -37,11 +37,11 @@ public class DataBootstrap implements ApplicationListener<ContextRefreshedEvent>
     private void saveValidAccounts(){
         var users = generateRandomUsersOfLocale(LOCALE, AMOUNT_USERS);
 
-        try {
-            for (User curr : users) {
+        for (User curr : users) {
+            try {
                 userService.save(curr);
-            }
-        }catch (UserExistsException ignored){};
+            }catch (UserExistsException ignored){}
+        };
     }
     private List<User> generateRandomUsersOfLocale(Locale locale, int amount){
         Faker faker = new Faker(locale);
@@ -61,7 +61,7 @@ public class DataBootstrap implements ApplicationListener<ContextRefreshedEvent>
 
         return User.builder()
                 .email(generateRandomEmail(faker))
-                .password(UUID.randomUUID().toString())
+                .password(faker.bothify("pass###word#??"))
                 .role(User.DEFAULT_USER_ROLE)
                 .emailVerified(true)
                 .lastActiveTime(randomActiveTime)
@@ -78,20 +78,23 @@ public class DataBootstrap implements ApplicationListener<ContextRefreshedEvent>
     private String generateRandomEmail(Faker faker){
         String mailProvider = EMAIL_PROVIDERS[faker.random().nextInt(EMAIL_PROVIDERS.length)];
         String mailHolder = randomMailHolder(faker);
-        int randomNumber = faker.random().nextInt(0,1000);
+        int randomNumber = faker.random().nextInt(0, 1000);
         return String.format("%s%d@%s", mailHolder, randomNumber, mailProvider);
     }
 
     private String randomMailHolder(Faker faker){
-        int rnd = faker.random().nextInt(0,2);
+        int rnd = faker.random().nextInt(3);
         String winner = "mclovin";
         switch (rnd){
             case 0:
                 winner = faker.lordOfTheRings().character().toLowerCase().replace(" ", ".");
+                break;
             case 1:
                 winner = faker.starWars().character().toLowerCase().replace(" ", ".");
+                break;
             case 2:
                 winner = faker.breakingBad().character().toLowerCase().replace(" ", ".");
+                break;
         }
         return winner;
     }

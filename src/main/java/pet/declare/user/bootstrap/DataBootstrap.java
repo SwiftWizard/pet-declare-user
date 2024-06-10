@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import pet.declare.user.domain.Address;
 import pet.declare.user.domain.User;
 import pet.declare.user.exceptions.UserExistsException;
-import pet.declare.user.services.UserService;
+import pet.declare.user.services.implementations.UserServiceImpl;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -18,7 +18,7 @@ import java.util.*;
 @Profile("data-init")
 public class DataBootstrap implements ApplicationListener<ContextRefreshedEvent> {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
     private final String IMAGE_REPOSITORY = "https://bogus-image-repository/images/%s";
 
     private static String[] EMAIL_PROVIDERS = {

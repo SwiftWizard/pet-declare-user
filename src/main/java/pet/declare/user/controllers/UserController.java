@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pet.declare.user.domain.User;
-import pet.declare.user.services.UserService;
+import pet.declare.user.services.implementations.UserServiceImpl;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -13,7 +13,7 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/users")
 @AllArgsConstructor
 public class UserController {
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @GetMapping("/greeting")
     public String greeting(){
@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable String id){
+    public ResponseEntity<User> getUserById(@PathVariable("id") String id){
         var user = userService.findById(id);
 
         if(user.isEmpty()){

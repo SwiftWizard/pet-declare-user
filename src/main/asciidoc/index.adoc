@@ -1,0 +1,20 @@
+= Project decalre.pet UserService documentation
+UserControllerTest
+
+One showing how to make a request using cURL:
+
+include::{snippets}/users/get-by-id/curl-request.adoc[]
+
+One showing the HTTP request:
+
+include::{snippets}/users/get-by-id/http-request.adoc[]
+
+And one showing the HTTP response:
+
+include::{snippets}/users/get-by-id/http-response.adoc[]
+
+Response Body:
+include::{snippets}/users/get-by-id/response-body.adoc[]
+
+Response Fields:
+include::{snippets}/users/get-by-id/response-fields.adoc[]

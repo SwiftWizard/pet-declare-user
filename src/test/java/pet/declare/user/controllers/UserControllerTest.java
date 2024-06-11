@@ -6,19 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import pet.declare.user.domain.AbstractUser;
+import pet.declare.user.controllers.restdocs.constraints.ConstrainedFields;
 import pet.declare.user.domain.User;
 import pet.declare.user.domain.UserMock;
 import pet.declare.user.repository.UserRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -27,6 +25,8 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
+import static org.springframework.restdocs.snippet.Attributes.attributes;
+import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -48,32 +48,30 @@ class UserControllerTest {
     }
 
     @Test
-    void save() {
-    }
-
-    @Test
     void getUserById() throws Exception{
         var mockUser = UserMock.mockUser();
         given(userRepository.findById(any(String.class))).willReturn(Optional.of(mockUser));
 
+        ConstrainedFields fields = new ConstrainedFields(User.class);
+
         mockMvc.perform(get("/users/{id}", mockUser.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andDo(document("users/",
+                .andDo(document("users/get-by-id",
                         pathParameters(
                             parameterWithName("id").description("Id of user to be found.")
                         ),
                         responseFields(
-                                fieldWithPath("id").description("The ID of the user"),
-                                fieldWithPath("email").description("Users email, severs as the username in the same time"),
-                                fieldWithPath("lastPasswordChangedTime").description("Users last password change time"),
-                                fieldWithPath("lastActiveTime").description("Users last activity time"),
-                                fieldWithPath("emailVerified").description("Has the users email been confirmed"),
-                                fieldWithPath("role").description("Role of the user"),
-                                fieldWithPath("name").description("User given name"),
-                                fieldWithPath("surname").description("User given surname"),
-                                fieldWithPath("profileImageUrl").description("Users profile image URL, singular"),
-                                fieldWithPath("contactNumber").description("Users phone number"),
-                                subsectionWithPath("address").description("Users address")
+                                fields.withPath("id").description("The ID of the user"),
+                                fields.withPath("email").description("Users email, severs as the username in the same time"),
+                                fields.withPath("lastPasswordChangedTime").description("Users last password change time"),
+                                fields.withPath("lastActiveTime").description("Users last activity time"),
+                                fields.withPath("emailVerified").description("Has the users email been confirmed"),
+                                fields.withPath("role").description("Role of the user"),
+                                fields.withPath("name").description("User given name"),
+                                fields.withPath("surname").description("User given surname"),
+                                fields.withPath("profileImageUrl").description("Users profile image URL, singular"),
+                                fields.withPath("contactNumber").description("Users phone number"),
+                                fields.subsectionWithPath("address").description("Users address")
                         )
                 ));
     }

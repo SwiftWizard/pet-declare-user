@@ -25,8 +25,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.restdocs.snippet.Attributes.attributes;
-import static org.springframework.restdocs.snippet.Attributes.key;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(RestDocumentationExtension.class)
@@ -43,7 +41,7 @@ class UserControllerTest {
 
     @Test
     void greeting() throws Exception{
-        mockMvc.perform(get("/users/greeting"))
+        mockMvc.perform(get("/users/public/greeting"))
                 .andExpect(status().isOk());
     }
 
@@ -54,7 +52,7 @@ class UserControllerTest {
 
         ConstrainedFields fields = new ConstrainedFields(User.class);
 
-        mockMvc.perform(get("/users/{id}", mockUser.getId()).accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/users/public/{id}", mockUser.getId()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(document("users/get-by-id",
                         pathParameters(

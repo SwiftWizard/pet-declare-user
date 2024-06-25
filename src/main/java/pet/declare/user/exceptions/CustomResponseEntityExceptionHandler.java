@@ -1,44 +1,140 @@
 package pet.declare.user.exceptions;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.*;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.context.request.ServletWebRequest;
-import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import pet.declare.user.utils.TimeUtils;
 
+import java.time.LocalDateTime;
+
+@Slf4j
 @ControllerAdvice
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @Value("${server.timezone}")
-    private String SERVER_TIME_ZONE;
     @ExceptionHandler(UserExistsException.class)
-    public ResponseEntity<ExceptionMessage> handleUserExistsException(UserExistsException ex) {
-        return new ResponseEntity<ExceptionMessage>(
-                new ExceptionMessage(ex.getMessage(), TimeUtils.currentServerZonedTime()),
+    public ResponseEntity<ExceptionDetails> handleUserExistsException(UserExistsException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
                 HttpStatus.CONFLICT
         );
     }
 
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ExceptionDetails> handleBadCredentialsException(BadCredentialsException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.UNAUTHORIZED
+        );
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ExceptionDetails> handleLockedException(LockedException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(CredentialsExpiredException.class)
+    public ResponseEntity<ExceptionDetails> handleCredentialsExpiredException(CredentialsExpiredException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ExceptionDetails> handleDisabledException(DisabledException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
+    }
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<ExceptionDetails> handleDisabledException(InternalAuthenticationServiceException ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+    @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
+    public ResponseEntity<ExceptionDetails> handleDisabledException(HttpServerErrorException.InternalServerError ex, ServletWebRequest request) {
+        logger.error(ex);
+        return new ResponseEntity<>(
+                ExceptionDetails.builder()
+                        .locale(String.valueOf(request.getLocale()))
+                        .path(request.getRequest().getRequestURI())
+                        .message(ex.getMessage())
+                        .time(LocalDateTime.now())
+                        .build(),
+                HttpStatus.FORBIDDEN
+        );
+    }
+
+
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
-            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+            MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, ServletWebRequest request) {
         return new ResponseEntity<>(
                 makeValidationErrorDetails(ex, request), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    private ValidationErrorDetails makeValidationErrorDetails(MethodArgumentNotValidException ex, WebRequest webReq){
+    private ValidationErrorDetails makeValidationErrorDetails(MethodArgumentNotValidException ex, ServletWebRequest request){
+        logger.error(ex);
         var errorFields = ex.getFieldErrors().stream().map(this::parseErrorField).toList();
-        var atURI = ((ServletWebRequest)webReq).getRequest().getRequestURI();
-        var exceptionMessage = new ExceptionMessage(ex.getMessage(), TimeUtils.currentServerZonedTime());
+        var exceptionMessage = ExceptionDetails.builder()
+                .locale(String.valueOf(request.getLocale()))
+                .path(request.getRequest().getRequestURI())
+                .message(ex.getMessage())
+                .time(LocalDateTime.now())
+                .build();
 
-        return new ValidationErrorDetails(atURI, errorFields, exceptionMessage);
+        return new ValidationErrorDetails(errorFields, exceptionMessage);
     }
 
     private ErrorField parseErrorField(FieldError fieldError){

@@ -105,6 +105,7 @@ public class DataBootstrap implements ApplicationListener<ContextRefreshedEvent>
         var otherStreet = (faker.random().nextDouble() > 0.9)? address.secondaryAddress() : null;
 
         return Address.builder()
+                        .country("United States")
                         .countryCode(address.countryCode())
                         .state(address.state())
                         .postalCode(address.postcode())

@@ -29,6 +29,7 @@ public abstract class AbstractUser implements UserDetails {
     public static final String ROLE_PREFIX = "ROLE_";
 
     @Id
+    @JsonIgnore
     protected String id;
 
     @NotBlank(message = "Email required")
@@ -38,10 +39,13 @@ public abstract class AbstractUser implements UserDetails {
     @Size(min = 7, message = "Password too short")
     @NotBlank(message = "Password required")
     private String password;
-
+    @JsonIgnore
     private LocalDateTime lastPasswordChangedTime;
+    @JsonIgnore
     private LocalDateTime lastActiveTime;
+    @JsonIgnore
     private boolean emailVerified;
+    @JsonIgnore
     private String role;
 
     @JsonIgnore

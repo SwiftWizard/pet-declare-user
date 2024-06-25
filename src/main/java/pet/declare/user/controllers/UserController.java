@@ -10,7 +10,7 @@ import pet.declare.user.services.implementations.UserServiceImpl;
 import static org.springframework.http.HttpStatus.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users/public")
 @AllArgsConstructor
 public class UserController {
     private UserServiceImpl userService;
@@ -18,11 +18,6 @@ public class UserController {
     @GetMapping("/greeting")
     public String greeting(){
         return "Hello World";
-    }
-
-    @PostMapping("/new")
-    public ResponseEntity<User> save(@RequestBody User user){
-        return new ResponseEntity<>(userService.save(user), CREATED);
     }
 
     @GetMapping("/{id}")

@@ -13,7 +13,6 @@ public class TimeUtils {
 
     @Value("${server.timezone}")
     public static String SERVER_TIME_ZONE;
-
     public static Duration PASSWORD_EXPIRES_DURATION;
     public static Duration ACCOUNT_EXPIRES_DURATION;
     @Value("${credentials.expire.threshold}")

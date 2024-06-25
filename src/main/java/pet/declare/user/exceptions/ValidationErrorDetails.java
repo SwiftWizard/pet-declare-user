@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class ValidationErrorDetails {
-    private String happenedAtURI;
     private List<ErrorField> failedValidationFields;
-    private ExceptionMessage exceptionMessage;
+    private ExceptionDetails exceptionMessage;
 }

@@ -11,21 +11,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import pet.declare.user.configuration.filters.JwtRequestFilters;
 import pet.declare.user.services.implementations.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
 public class AuthConfig {
-
-    @Autowired
-    private JwtRequestFilters jwtRequestFilter;
-
     @Bean
     public UserDetailsService userDetailsService(){
         return new CustomUserDetailsService();
@@ -35,11 +28,9 @@ public class AuthConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.authorizeHttpRequests((authorize) ->
-                        authorize.requestMatchers("/users/auth/**")
-                                .permitAll()
+                        authorize.requestMatchers("/users/auth/*").permitAll()
                                 .anyRequest()
                                 .authenticated()
                 ).build();

@@ -1,4 +1,4 @@
-package pet.declare.user.dtos.inbound.query;
+package pet.declare.user.dtos.inbound;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -10,6 +10,7 @@ import pet.declare.user.domain.Address;
 import pet.declare.user.domain.User;
 import pet.declare.user.repository.UserRepository;
 import pet.declare.user.services.interfaces.UserService;
+import pet.declare.user.utils.JwtUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,11 +19,15 @@ class UserServiceImplTest extends AbstractUser {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private JwtUtils jwtUtils;
+
     private UserService userService;
 
     @BeforeEach
     void setup(){
         MockitoAnnotations.openMocks(this);
-        userService = new UserServiceImpl(userRepository);
+        jwtUtils = new JwtUtils();
+        userService = new UserServiceImpl(userRepository, jwtUtils);
     }
 }
